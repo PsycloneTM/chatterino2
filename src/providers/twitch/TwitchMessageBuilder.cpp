@@ -476,6 +476,7 @@ QString TwitchMessageBuilder::stringifyBttvModifier(BttvModifier modifier)
 
 void TwitchMessageBuilder::addTextOrEmoji(EmotePtr emote)
 {
+    this->bttvModifier_ = BttvModifier::None;
     return SharedMessageBuilder::addTextOrEmoji(emote);
 }
 
