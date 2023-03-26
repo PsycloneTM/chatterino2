@@ -464,10 +464,13 @@ QString TwitchMessageBuilder::stringifyBttvModifier(BttvModifier modifier)
             return QStringLiteral("v!");
         case BttvModifier::ZeroSpace:
             return QStringLiteral("z!");
+            // TODO: wait for CI to use a newer version of clang-format
+            // clang-format off
         case BttvModifier::None:
             [[fallthrough]];
         [[unlikely]] default:
             return QStringLiteral("");
+            // clang-format on
     }
 }
 
@@ -1127,8 +1130,11 @@ Outcome TwitchMessageBuilder::tryAppendEmote(const EmoteName &name)
 
     switch (this->bttvModifier_)
     {
+        // TODO: wait for CI to use a newer version of clang-format
+        // clang-format off
         [[likely]] case BttvModifier::None:
             break;
+            // clang-format on
         case BttvModifier::Wide:
             flags.set(MessageElementFlag::BttvModifierWide);
             break;
