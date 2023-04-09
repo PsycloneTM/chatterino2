@@ -21,8 +21,6 @@
 #include <QTextStream>
 #include <QVBoxLayout>
 
-#include <qmarkdown.h>
-
 #define PIXMAP_WIDTH 500
 
 #define LINK_CHATTERINO_WIKI "https://wiki.chatterino.com"
