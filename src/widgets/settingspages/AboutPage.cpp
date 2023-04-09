@@ -10,11 +10,18 @@
 
 #include <QFile>
 #include <QFormLayout>
-#include <QGroupBox>
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QScrollArea>
+#include <QTextStream>
+#include <QUrl>
 #include <QTextEdit>
 #include <QTextStream>
 #include <QVBoxLayout>
+
+#include <QMarkdown.h>
 
 #define PIXMAP_WIDTH 500
 
@@ -143,81 +150,84 @@ AboutPage::AboutPage()
             // clang-format on
         }
 
-        // Contributors
-        auto contributors = layout.emplace<QGroupBox>("Contributors");
-        {
-            auto l = contributors.emplace<QVBoxLayout>();
+// Contributors
+void MainWindow::setupContributors()
+{
+    auto scrollArea = layout.emplace<QScrollArea>();
+    auto contentWidget = scrollArea.emplace<QWidget>();
+    auto layout = contentWidget.emplace<QVBoxLayout>();
+    layout->setContentsMargins(0, 0, 0, 0);
 
-            QFile contributorsFile(":/contributors.txt");
-            contributorsFile.open(QFile::ReadOnly);
+    auto contributorsGroup = layout.emplace<QGroupBox>("Contributors");
+    auto contributorsLayout = contributorsGroup.emplace<QVBoxLayout>();
 
-            QTextStream stream(&contributorsFile);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            // Default encoding of QTextStream is already UTF-8
-#else
-            stream.setCodec("UTF-8");
-#endif
-
-            QString line;
-
-            while (stream.readLineInto(&line))
-            {
-                if (line.isEmpty() || line.startsWith('#'))
-                {
-                    continue;
-                }
-
-                QStringList contributorParts = line.split("|");
-
-                if (contributorParts.size() != 4)
-                {
-                    qCDebug(chatterinoWidget)
-                        << "Missing parts in line" << line;
-                    continue;
-                }
-
-                QString username = contributorParts[0].trimmed();
-                QString url = contributorParts[1].trimmed();
-                QString avatarUrl = contributorParts[2].trimmed();
-                QString role = contributorParts[3].trimmed();
-
-                auto *usernameLabel =
-                    new QLabel("<a href=\"" + url + "\">" + username + "</a>");
-                usernameLabel->setOpenExternalLinks(true);
-                auto *roleLabel = new QLabel(role);
-
-                auto contributorBox2 = l.emplace<QHBoxLayout>();
-
-                const auto addAvatar = [&avatarUrl, &contributorBox2] {
-                    if (!avatarUrl.isEmpty())
-                    {
-                        QPixmap avatarPixmap;
-                        avatarPixmap.load(avatarUrl);
-
-                        auto avatar = contributorBox2.emplace<QLabel>();
-                        avatar->setPixmap(avatarPixmap);
-                        avatar->setFixedSize(64, 64);
-                        avatar->setScaledContents(true);
-                    }
-                };
-
-                const auto addLabels = [&contributorBox2, &usernameLabel,
-                                        &roleLabel] {
-                    auto labelBox = new QVBoxLayout();
-                    contributorBox2->addLayout(labelBox);
-
-                    labelBox->addWidget(usernameLabel);
-                    labelBox->addWidget(roleLabel);
-                };
-
-                addLabels();
-                addAvatar();
-            }
-        }
+    QFile file(":/contributors.md");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qCritical() << "Failed to open contributors file";
+        return;
     }
 
-    layout->addStretch(1);
+    QTextStream stream(&file);
+    QString markdown = stream.readAll();
+
+    // Parse the Markdown file
+    QMarkdown md;
+    QString html = md.render(markdown);
+
+    // Create a QTextDocument to render the HTML as rich text
+    QTextDocument doc;
+    doc.setHtml(html);
+
+    // Iterate over the document's blocks to extract the contributor information
+    QTextBlock block = doc.begin();
+    while (block.isValid()) {
+        QTextBlockUserData *userData = block.userData();
+        if (!userData) {
+            // This is not a user data block, so add it to the layout as rich text
+            QString text = block.text();
+            if (!text.isEmpty()) {
+                auto *label = new QLabel(text);
+                label->setTextFormat(Qt::RichText);
+                label->setTextInteractionFlags(Qt::TextBrowserInteraction);
+                label->setOpenExternalLinks(true);
+                contributorsLayout->addWidget(label);
+            }
+        } else if (qobject_cast<QMarkdownUserData*>(userData)) {
+            // This is a user data block, so extract the contributor information
+            auto *userData = qobject_cast<QMarkdownUserData*>(block.userData());
+            const auto &contributor = userData->contributor;
+
+            auto contributorLayout = contributorsLayout.emplace<QHBoxLayout>();
+            contributorLayout->setSpacing(16);
+
+            auto *avatarLabel = new QLabel();
+            avatarLabel->setPixmap(QPixmap(contributor.avatar));
+            avatarLabel->setAlignment(Qt::AlignCenter);
+            contributorLayout->addWidget(avatarLabel);
+
+            auto *infoLayout = new QVBoxLayout;
+            contributorLayout->addLayout(infoLayout);
+
+            auto *nameLabel = new QLabel(contributor.name);
+            nameLabel->setFont(QFont("Helvetica", 16, QFont::Bold));
+            infoLayout->addWidget(nameLabel);
+
+            auto *roleLabel = new QLabel(contributor.role);
+            infoLayout->addWidget(roleLabel);
+
+            if (!contributor.url.isEmpty()) {
+                auto *urlLabel = new QLabel(contributor.url);
+                urlLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+                urlLabel->setOpenExternalLinks(true);
+                infoLayout->addWidget(urlLabel);
+            }
+        }
+        block = block.next();
+    }
+
+    file.close();
 }
+
 
 void AboutPage::addLicense(QFormLayout *form, const QString &name,
                            const QString &website, const QString &licenseLink)
