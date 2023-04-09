@@ -21,7 +21,7 @@
 #include <QTextStream>
 #include <QVBoxLayout>
 
-#include <QMarkdown.h>
+#include <qmarkdown.h>
 
 #define PIXMAP_WIDTH 500
 
