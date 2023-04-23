@@ -602,9 +602,10 @@ if (WIN32)
     endif ()
 
 elseif (APPLE)
-    set(MACOS_BUNDLE_ICON_FILE "${CMAKE_SOURCE_DIR}/resources/chatterino.icns")
-    list(APPEND SOURCE_FILES "${MACOS_BUNDLE_ICON_FILE}")
-    set_source_files_properties(${MACOS_BUNDLE_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set(MACOSX_BUNDLE_ICON_FILE "chatterino.icns")
+    set(MACOSX_BUNDLE_ICON_FILE "resources/${MACOSX_BUNDLE_ICON_FILE}")
+    list(APPEND SOURCE_FILES "${MACOSX_BUNDLE_ICON_FILE}")
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/resources/${MACOSX_BUNDLE_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 endif ()
 
 # Generate source groups for use in IDEs
@@ -698,7 +699,7 @@ endfunction()
 
 if (BUILD_APP)
     if (APPLE)
-        add_executable(${EXECUTABLE_PROJECT} ${MACOS_BUNDLE_ICON_FILE} main.cpp)
+        add_executable(${EXECUTABLE_PROJECT} ${MACOSX_BUNDLE_ICON_FILE} main.cpp)
     else()
         add_executable(${EXECUTABLE_PROJECT} main.cpp)
     endif()
