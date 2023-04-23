@@ -595,18 +595,18 @@ set(SOURCE_FILES
         ${CMAKE_SOURCE_DIR}/resources/resources.qrc
         )
 
-if (WIN32)
-    # clang-cl doesn't support resource files
-    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        list(APPEND SOURCE_FILES "${CMAKE_SOURCE_DIR}/resources/windows.rc")
-    endif ()
-
-elseif (APPLE)
+if (APPLE)
     set(MACOSX_BUNDLE_ICON_FILE "chatterino.icns")
     set(MACOS_BUNDLE_ICON_FILE "${CMAKE_SOURCE_DIR}/resources/chatterino.icns")
     list(APPEND SOURCE_FILES "${MACOS_BUNDLE_ICON_FILE}")
     set_source_files_properties(${MACOS_BUNDLE_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 endif ()
+
+elseif (WIN32)
+    # clang-cl doesn't support resource files
+    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        list(APPEND SOURCE_FILES "${CMAKE_SOURCE_DIR}/resources/windows.rc")
+    endif ()
 
 # Generate source groups for use in IDEs
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_FILES})
