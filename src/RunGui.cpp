@@ -82,7 +82,7 @@ namespace {
 
         QApplication::setStyle(QStyleFactory::create("Fusion"));
 
-        QApplication::setWindowIcon(QIcon(":/icon.ico"));
+        QApplication::setWindowIcon(QIcon(":/chatterino.ico"));
 
         installCustomPalette();
     }
