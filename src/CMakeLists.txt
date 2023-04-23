@@ -602,10 +602,9 @@ if (WIN32)
     endif ()
 
 elseif (APPLE)
-    set(MACOSX_BUNDLE_ICON_FILE "chatterino.icns")
-    set(MACOS_BUNDLE_ICON_FILE "${CMAKE_SOURCE_DIR}/resources/chatterino.icns")
+    set(MACOSX_BUNDLE_ICON_FILE "chatterino.ico")
+    set(MACOS_BUNDLE_ICON_FILE "${CMAKE_SOURCE_DIR}/resources/chatterino.ico")
     list(APPEND SOURCE_FILES "${MACOS_BUNDLE_ICON_FILE}")
-    list(APPEND SOURCE_FILES "${CMAKE_SOURCE_DIR}/resources/macos.rc")
     set_source_files_properties(${MACOS_BUNDLE_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 endif ()
 
@@ -844,7 +843,7 @@ if (APPLE AND BUILD_APP)
         MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_ICON_FILE chatterino.icns
+        MACOSX_BUNDLE_ICON_FILE chatterino.ico
         )
 endif ()
 
