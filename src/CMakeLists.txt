@@ -603,10 +603,10 @@ if (APPLE)
 endif ()
 
 elseif (WIN32)
-    # clang-cl doesn't support resource files
-    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        list(APPEND SOURCE_FILES "${CMAKE_SOURCE_DIR}/resources/windows.rc")
-    endif ()
+        # clang-cl doesn't support resource files
+        if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            list(APPEND SOURCE_FILES "${CMAKE_SOURCE_DIR}/resources/windows.rc")
+        endif ()
 
 # Generate source groups for use in IDEs
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_FILES})
