@@ -296,6 +296,13 @@ jobs:
           sh ./../.CI/CreateUbuntuDeb.sh
         shell: bash
 
+      - name: Package - .snap (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu') && matrix.skip_artifact != 'yes'
+        run: |
+          cd build
+          sh ./../.CI/CreateUbuntuSnap.sh
+        shell: bash
+
       - name: Upload artifact - AppImage (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu-20.04') && matrix.skip_artifact != 'yes'
         uses: actions/upload-artifact@v3
@@ -309,6 +316,13 @@ jobs:
         with:
           name: Chatterino-${{ matrix.os }}-Qt-${{ matrix.qt-version }}.deb
           path: build/Chatterino-${{ matrix.os }}-x86_64.deb
+
+      - name: Upload artifact - .snap (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu') && matrix.skip_artifact != 'yes'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Chatterino-${{ matrix.os }}-Qt-${{ matrix.qt-version }}.snap
+          path: build/Chatterino-${{ matrix.os }}-x86_64.snap
 
       # MACOS
       - name: Install dependencies (MacOS)
@@ -373,6 +387,12 @@ jobs:
           path: release-artifacts/
 
       - uses: actions/download-artifact@v3
+        name: Ubuntu 22.04 Qt6.2.4 snap
+        with:
+          name: Chatterino-ubuntu-22.04-Qt-6.2.4.snap
+          path: release-artifacts/
+
+      - uses: actions/download-artifact@v3
         name: Windows Qt6.5.0
         with:
           name: chatterino-windows-x86-64-Qt-6.5.0.zip
@@ -423,6 +443,12 @@ jobs:
         name: Ubuntu 22.04 Qt5.15.2 deb
         with:
           name: Chatterino-ubuntu-22.04-Qt-5.15.2.deb
+          path: release-artifacts/
+
+      - uses: actions/download-artifact@v3
+        name: Ubuntu 22.04 Qt5.15.2 snap
+        with:
+          name: Chatterino-ubuntu-22.04-Qt-5.15.2.snap
           path: release-artifacts/
 
       - uses: actions/download-artifact@v3
