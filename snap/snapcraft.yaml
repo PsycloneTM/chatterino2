@@ -28,25 +28,23 @@ parts:
     build-packages: 
       - wget
     stage-packages:
-      - sudo apt-get update
-      - sudo apt-get -y install \
-      - cmake \
-      - virtualenv \
-      - rapidjson-dev \
-      - libfuse2 \
-      - libssl-dev \
-      - libboost-dev \
-      - libxcb-randr0-dev \
-      - libboost-system-dev \
-      - libboost-filesystem-dev \
-      - libpulse-dev \
-      - libxkbcommon-x11-0 \
-      - build-essential \
-      - libgl1-mesa-dev \
-      - libxcb-icccm4 \
-      - libxcb-image0 \
-      - libxcb-keysyms1 \
-      - libxcb-render-util0 \
+      - cmake 
+      - virtualenv 
+      - rapidjson-dev 
+      - libfuse2 
+      - libssl-dev 
+      - libboost-dev 
+      - libxcb-randr0-dev 
+      - libboost-system-dev 
+      - libboost-filesystem-dev 
+      - libpulse-dev 
+      - libxkbcommon-x11-0 
+      - build-essential 
+      - libgl1-mesa-dev 
+      - libxcb-icccm4 
+      - libxcb-image0 
+      - libxcb-keysyms1 
+      - libxcb-render-util0 
       - libxcb-xinerama0
 
     extensions: [ gnome ]

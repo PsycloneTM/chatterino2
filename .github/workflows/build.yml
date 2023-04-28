@@ -300,7 +300,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu') && matrix.skip_artifact != 'yes'
         run: |
           cd build
-          sh ./../.github/snap/snapcraft.yaml
+          sh ./../.CI/CreateUbuntuSnap.sh
         shell: bash
 
       - name: Upload artifact - AppImage (Ubuntu)
