@@ -300,7 +300,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu') && matrix.skip_artifact != 'yes'
         run: |
           cd build
-          sh /snap/snapcraft.yaml
+          sh ./../.github/snap/snapcraft.yaml
         shell: bash
 
       - name: Upload artifact - AppImage (Ubuntu)
@@ -387,6 +387,12 @@ jobs:
           path: release-artifacts/
 
       - uses: actions/download-artifact@v3
+        name: Ubuntu 22.04 Qt6.2.4 snap
+        with:
+          name: Chatterino-ubuntu-22.04-Qt-6.2.4.snap
+          path: release-artifacts/
+
+      - uses: actions/download-artifact@v3
         name: Windows Qt6.5.0
         with:
           name: chatterino-windows-x86-64-Qt-6.5.0.zip
@@ -437,6 +443,12 @@ jobs:
         name: Ubuntu 22.04 Qt5.15.2 deb
         with:
           name: Chatterino-ubuntu-22.04-Qt-5.15.2.deb
+          path: release-artifacts/
+
+      - uses: actions/download-artifact@v3
+        name: Ubuntu 22.04 Qt5.15.2 snap
+        with:
+          name: Chatterino-ubuntu-22.04-Qt-5.15.2.snap
           path: release-artifacts/
 
       - uses: actions/download-artifact@v3
