@@ -296,7 +296,7 @@ jobs:
           sh ./../.CI/CreateUbuntuDeb.sh
         shell: bash
 
-      - name Package - .snap (Ubuntu)
+      - name: Package - .snap (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu') && matrix.skip_artifact != 'yes'
         run: |
           cd build
