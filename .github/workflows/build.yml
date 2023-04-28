@@ -296,6 +296,13 @@ jobs:
           sh ./../.CI/CreateUbuntuDeb.sh
         shell: bash
 
+      - name Package - .snap (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu') && matrix.skip_artifact != 'yes'
+        run: |
+          cd build
+          sh ./../.CI/CreateUbuntuDeb.sh
+        shell: bash
+
       - name: Upload artifact - AppImage (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu-20.04') && matrix.skip_artifact != 'yes'
         uses: actions/upload-artifact@v3
@@ -309,6 +316,13 @@ jobs:
         with:
           name: Chatterino-${{ matrix.os }}-Qt-${{ matrix.qt-version }}.deb
           path: build/Chatterino-${{ matrix.os }}-x86_64.deb
+
+      - name: Upload artifact - .snap (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu') && matrix.skip_artifact != 'yes'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Chatterino-${{ matrix.os }}-Qt-${{ matrix.qt-version }}.snap
+          path: build/Chatterino-${{ matrix.os }}-x86_64.snap
 
       # MACOS
       - name: Install dependencies (MacOS)

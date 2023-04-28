@@ -1,0 +1,55 @@
+name: chatterino
+base: core22
+title: Chatterino
+version: git
+summary: test
+description: |
+  test
+
+type: app
+grade: stable
+confinement: strict
+icon: snap/gui/chatterino.png
+license: BSD-2-Clause
+compression: lzo
+
+parts:
+  adoptopenjdk:
+    plugin: dump
+    source: https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.18_10.tar.gz
+    source-checksum: "sha256/0e7b196ef8603ac3d38caaf7768b7b0a3c613d60e15a6511bcfb2c894b609e99"
+    stage-packages:
+      - libxi6
+      - libxrender1
+      - libxtst6
+
+  chatterino:
+    plugin: nil # Cannot use dump due to limited source-type support
+    build-packages: 
+      - wget
+    stage-packages:
+      - sudo apt-get update
+      - sudo apt-get -y install \
+      - cmake \
+      - virtualenv \
+      - rapidjson-dev \
+      - libfuse2 \
+      - libssl-dev \
+      - libboost-dev \
+      - libxcb-randr0-dev \
+      - libboost-system-dev \
+      - libboost-filesystem-dev \
+      - libpulse-dev \
+      - libxkbcommon-x11-0 \
+      - build-essential \
+      - libgl1-mesa-dev \
+      - libxcb-icccm4 \
+      - libxcb-image0 \
+      - libxcb-keysyms1 \
+      - libxcb-render-util0 \
+      - libxcb-xinerama0
+
+    extensions: [ gnome ]
+    environment:
+      _JAVA_OPTIONS: -Duser.home="$SNAP_USER_COMMON"
+      ALSA_CONFIG_PATH: "$SNAP/etc/asound.conf"

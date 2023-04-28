@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Chatterino
+Comment=test
+Exec=chatterino
+Icon=${SNAP}/meta/gui/chatterino.png
+Type=Application
+Categories=Chatting;
+StartupNotify=false
+Keywords=chat;
