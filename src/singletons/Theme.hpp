@@ -27,8 +27,8 @@ struct ThemeDescriptor {
 class Theme final : public Singleton
 {
 public:
-    QString contextMenuStyleSheet;
-    static const std::map<QString, ThemeDescriptor> builtInThemes;
+    QString contextMenuStyke static const std::map<QString, ThemeDescriptor>
+        builtInThemes;
 
     // The built in theme that will be used if some theme parsing fails
     static const ThemeDescriptor fallbackTheme;

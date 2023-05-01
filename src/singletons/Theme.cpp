@@ -1,3 +1,4 @@
+
 #include "singletons/Theme.hpp"
 
 #include "Application.hpp"
@@ -203,8 +204,6 @@ void Theme::initialize(Settings &settings, Paths &paths)
     this->loadAvailableThemes();
 
     this->update();
-
-    this->contextMenuStyleSheet = "your default style here";
 }
 
 void Theme::update()
@@ -297,17 +296,17 @@ void Theme::loadAvailableThemes()
 
         auto themeName = info.baseName();
 
-        // Check if the theme name already exists in the built-in themes
-        if (Theme::builtInThemes.count(themeName) == 0)
+        // check if a built-in theme with the same name exists
+        auto builtInTheme = Theme::builtInThemes.find(themeName);
+        if (builtInTheme != Theme::builtInThemes.end())
         {
-            this->availableThemes_.emplace(themeName, themeDescriptor);
+            qCWarning(chatterinoTheme) << "Custom theme with name " << themeName
+                                       << " ignored, a built-in theme with the "
+                                          "same name already exists";
+            continue;
         }
-        else
-        {
-            qCWarning(chatterinoTheme)
-                << "Custom theme" << themeName
-                << "has the same name as a built-in theme and will be ignored.";
-        }
+
+        this->availableThemes_.emplace(themeName, themeDescriptor);
     }
 }
 
