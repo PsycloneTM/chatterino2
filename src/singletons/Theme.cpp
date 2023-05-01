@@ -182,20 +182,19 @@ std::optional<QJsonObject> loadTheme(const ThemeDescriptor &theme)
     }
 
     return root;
-}
 
-QJsonParseError error{};
-auto json = QJsonDocument::fromJson(file.readAll(), &error);
-if (!json.isObject())
-{
-    qCWarning(chatterinoTheme) << "Failed to parse" << file.fileName()
-                               << "error:" << error.errorString();
-    return std::nullopt;
-}
+    QJsonParseError error{};
+    auto json = QJsonDocument::fromJson(file.readAll(), &error);
+    if (!json.isObject())
+    {
+        qCWarning(chatterinoTheme) << "Failed to parse" << file.fileName()
+                                   << "error:" << error.errorString();
+        return std::nullopt;
+    }
 
-// TODO: Validate JSON schema?
+    // TODO: Validate JSON schema?
 
-return json.object();
+    return json.object();
 }
 
 }  // namespace
