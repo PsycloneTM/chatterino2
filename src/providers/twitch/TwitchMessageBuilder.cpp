@@ -452,13 +452,10 @@ TwitchMessageBuilder::BttvModifier TwitchMessageBuilder::tryParseBttvModifier(
     switch (word.at(0).unicode())
     {
         case u'w':
-        case u'W':
             return BttvModifier::Wide;
         case u'h':
-        case u'Y':
             return BttvModifier::FlipH;
         case u'v':
-        case u'X':
             return BttvModifier::FlipV;
         case u'z':
             return BttvModifier::ZeroSpace;
