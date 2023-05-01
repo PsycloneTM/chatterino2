@@ -27,7 +27,7 @@ struct ThemeDescriptor {
 class Theme final : public Singleton
 {
 public:
-    static const std::map<QString, ThemeDescriptor> builtInThemes;
+    std::map<QString, ThemeDescriptor> getAvailableThemes() const;
 
     // The built in theme that will be used if some theme parsing fails
     static const ThemeDescriptor fallbackTheme;
