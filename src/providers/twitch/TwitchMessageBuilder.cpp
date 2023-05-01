@@ -441,9 +441,9 @@ TwitchMessageBuilder::BttvModifier TwitchMessageBuilder::tryParseBttvModifier(
     {
         case u'w':
             return BttvModifier::Wide;
-        case u'h':
+        case u'h, Y':
             return BttvModifier::FlipH;
-        case u'v':
+        case u'v, X':
             return BttvModifier::FlipV;
         case u'z':
             return BttvModifier::ZeroSpace;
@@ -457,11 +457,11 @@ QString TwitchMessageBuilder::stringifyBttvModifier(BttvModifier modifier)
     switch (modifier)
     {
         case BttvModifier::Wide:
-            return QStringLiteral("w!");
+            return QStringLiteral("w!, ffzW");
         case BttvModifier::FlipH:
-            return QStringLiteral("h!");
+            return QStringLiteral("h!, ffzY");
         case BttvModifier::FlipV:
-            return QStringLiteral("v!");
+            return QStringLiteral("v!, ffzX");
         case BttvModifier::ZeroSpace:
             return QStringLiteral("z!");
             // TODO: wait for CI to use a newer version of clang-format
