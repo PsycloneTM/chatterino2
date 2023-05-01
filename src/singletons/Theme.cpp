@@ -172,17 +172,6 @@ std::optional<QJsonObject> loadTheme(const ThemeDescriptor &theme)
         return std::nullopt;
     }
 
-    const QByteArray data = file.readAll();
-    const QJsonDocument doc = QJsonDocument::fromJson(data);
-    const QJsonObject &root = doc.object();
-    if (root.isEmpty())
-    {
-        qCWarning(chatterinoTheme) << "Loaded JSON is empty: " << theme.path;
-        return std::nullopt;
-    }
-
-    return root;
-
     QJsonParseError error{};
     auto json = QJsonDocument::fromJson(file.readAll(), &error);
     if (!json.isObject())
