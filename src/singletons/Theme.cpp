@@ -150,30 +150,38 @@ void parseColors(const QJsonObject &root, chatterino::Theme &theme)
  *
  * NOTE: No theme validation is done by this function
  **/
-std::optional<Theme> ThemeManager::loadTheme(const ThemeDescriptor &descriptor)
+std::optional<QJsonObject> loadTheme(const ThemeDescriptor &theme)
 {
-    // Check if the theme name matches a built-in theme name
-    if (descriptor.name == "Light" || descriptor.name == "Dark" ||
-        descriptor.name == "Black")
+    // Check if the theme has the same name as a built-in theme
+    const auto &builtinThemes =
+        chatterino::singletons::ResourceManager::getInstance().getThemeMap();
+    const auto it = builtinThemes.find(theme.name);
+    if (it != builtinThemes.end())
     {
-        // Return an error or do something else to prevent the theme from being loaded
-        qCWarning(chatterinoTheme)
-            << "Cannot load custom theme with same name as built-in theme:"
-            << descriptor.name;
+        qCWarning(chatterinoTheme) << "Theme with name" << theme.name
+                                   << "has the same name as a built-in theme. "
+                                      "Custom theme will not be loaded.";
         return std::nullopt;
     }
 
-    // Load the theme as usual
-    QFile file(descriptor.path);
+    QFile file(theme.path);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qCWarning(chatterinoTheme)
-            << "Error opening theme file:" << descriptor.path
-            << file.errorString();
+        qCWarning(chatterinoTheme).nospace()
+            << "Unable to open file: " << theme.path;
         return std::nullopt;
     }
 
-    // ...
+    const QByteArray data = file.readAll();
+    const QJsonDocument doc = QJsonDocument::fromJson(data);
+    const QJsonObject &root = doc.object();
+    if (root.isEmpty())
+    {
+        qCWarning(chatterinoTheme) << "Loaded JSON is empty: " << theme.path;
+        return std::nullopt;
+    }
+
+    return root;
 }
 
 QJsonParseError error{};
