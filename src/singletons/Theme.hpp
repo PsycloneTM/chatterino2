@@ -20,6 +20,7 @@ struct ThemeDescriptor {
     // Path to the theme on disk
     // Can be a Qt resource path
     QString path;
+    QString displayName;
 
     bool custom;
 };
