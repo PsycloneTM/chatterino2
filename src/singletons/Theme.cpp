@@ -294,7 +294,7 @@ void Theme::loadAvailableThemes()
             continue;
         }
 
-        auto themeName = info.baseName();
+        auto themeName = QString("Custom: %1").arg(info.baseName());
 
         this->availableThemes_.emplace(themeName, themeDescriptor);
     }
