@@ -253,15 +253,7 @@ QStringList Theme::availableThemeNames() const
 
     for (const auto &[name, theme] : this->availableThemes_)
     {
-        // NOTE: This check could also use `Theme::builtInThemes.contains(name)` instead
-        if (theme.custom)
-        {
-            themeNames.append(QString("Custom: %1").arg(name));
-        }
-        else
-        {
-            themeNames.append(name);
-        }
+        themeNames.append(name);
     }
 
     return themeNames;
@@ -294,7 +286,12 @@ void Theme::loadAvailableThemes()
             continue;
         }
 
-        auto themeName = QString("Custom: %1").arg(info.baseName());
+        auto themeName = info.baseName();
+        
+        if (builtInThemes.find(themeName) != builtInTheme.end())
+        {
+            themeName += " (Custom)";
+        }
 
         this->availableThemes_.emplace(themeName, themeDescriptor);
     }
