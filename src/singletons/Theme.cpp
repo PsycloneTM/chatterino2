@@ -236,36 +236,41 @@ QStringList Theme::availableThemeNames() const {
   return themeNames;
 }
 
-void Theme::loadAvailableThemes() {
-  this->availableThemes_ = Theme::builtInThemes;
+void Theme::loadAvailableThemes()
+{
+    this->availableThemes_ = Theme::builtInThemes;
 
-  auto dir = QDir(getPaths()->themesDirectory);
-  for (const auto &info :
-       dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot, QDir::Name)) {
-    if (!info.isFile()) {
-      continue;
+    auto dir = QDir(getPaths()->themesDirectory);
+    for (const auto &info :
+         dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot, QDir::Name))
+    {
+        if (!info.isFile())
+        {
+            continue;
+        }
+
+        if (!info.fileName().endsWith(".json"))
+        {
+            continue;
+        }
+
+        auto themeDescriptor = ThemeDescriptor{info.absoluteFilePath(), info.baseName(), true};
+        
+        auto theme = loadTheme(themeDescriptor);
+        if (!theme)
+        {
+            qCWarning(chatterinoTheme) << "Failed to parse theme at" << info;
+            continue;
+        }
+
+        auto themeName = info.baseName();
+        if (this->builtInThemes.find(themeName) != this->builtInThemes.end())
+        {
+            themeName += " (Custom)";
+            themeDescriptor.displayName = themeName;
+        }
+        this->availableThemes_.emplace(themeName, themeDescriptor);
     }
-
-    if (!info.fileName().endsWith(".json")) {
-      continue;
-    }
-
-    auto themeDescriptor =
-        ThemeDescriptor{info.absoluteFilePath(), info.baseName(), true};
-
-    auto theme = loadTheme(themeDescriptor);
-    if (!theme) {
-      qCWarning(chatterinoTheme) << "Failed to parse theme at" << info;
-      continue;
-    }
-
-    auto themeName = info.baseName();
-    if (this->builtInThemes.find(themeName) != this->builtInThemes.end()) {
-      themeName += " (Custom)";
-      themeDescriptor.displayName = themeName;
-    }
-    this->availableThemes_.emplace(themeName, themeDescriptor);
-  }
 }
 
 void Theme::parseFrom(const QJsonObject &root) {
