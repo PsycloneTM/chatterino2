@@ -294,18 +294,8 @@ void Theme::loadAvailableThemes()
             continue;
         }
 
-        auto themeName = info.baseName();
-
-        // Check if a theme with the same name already exists
-        if (this->availableThemes_.find(themeName) !=
-            this->availableThemes_.end())
-        {
-            qCWarning(chatterinoTheme)
-                << "Custom theme" << themeName
-                << "has the same name as a built-in theme. Skipping.";
-            continue;
-        }
-
+        auto themeName = QString("Custom %1").arg(info.baseName());
+                                 
         this->availableThemes_.emplace(themeName, themeDescriptor);
     }
 }
