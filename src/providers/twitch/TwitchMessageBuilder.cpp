@@ -2,6 +2,7 @@
 
 #include "Application.hpp"
 #include "BaseSettings.hpp"
+#include "common/LinkParser.hpp"
 #include "common/QLogging.hpp"
 #include "controllers/accounts/AccountController.hpp"
 #include "controllers/ignores/IgnoreController.hpp"
@@ -155,6 +156,17 @@ bool TwitchMessageBuilder::isIgnored() const
     return isIgnoredMessage({
         /*.message = */ this->originalMessage_,
         /*.twitchUserID = */ this->tags.value("user-id").toString(),
+        /*.isMod = */ this->channel->isMod(),
+        /*.isBroadcaster = */ this->channel->isBroadcaster(),
+    });
+}
+
+bool TwitchMessageBuilder::isIgnoredReply() const
+{
+    return isIgnoredMessage({
+        /*.message = */ this->originalMessage_,
+        /*.twitchUserID = */
+        this->tags.value("reply-parent-user-id").toString(),
         /*.isMod = */ this->channel->isMod(),
         /*.isBroadcaster = */ this->channel->isBroadcaster(),
     });
@@ -523,10 +535,12 @@ void TwitchMessageBuilder::addTextOrEmoji(const QString &string_)
 
     // Actually just text
     auto linkString = this->matchLink(string);
+    
+    LinkParser parsed(string);
 
-    if (!linkString.isEmpty())
+    if (parsed.result())
     {
-        this->addLink(string, linkString);
+        this->addLink(*parsed.result());
         return;
     }
 
@@ -689,19 +703,27 @@ void TwitchMessageBuilder::parseThread()
         if (replyDisplayName != this->tags.end() &&
             replyBody != this->tags.end())
         {
-            auto name = replyDisplayName->toString();
-            auto body = parseTagString(replyBody->toString());
+            QString body;
 
             this->emplace<ReplyCurveElement>();
-
             this->emplace<TextElement>(
                 "Replying to", MessageElementFlag::RepliedMessage,
                 MessageColor::System, FontStyle::ChatMediumSmall);
 
-            this->emplace<TextElement>(
-                    "@" + name + ":", MessageElementFlag::RepliedMessage,
-                    this->textColor_, FontStyle::ChatMediumSmall)
-                ->setLink({Link::UserInfo, name});
+            if (this->isIgnoredReply())
+            {
+                body = QString("[Blocked user]");
+            }
+            else
+            {
+                auto name = replyDisplayName->toString();
+                body = parseTagString(replyBody->toString());
+
+                this->emplace<TextElement>(
+                        "@" + name + ":", MessageElementFlag::RepliedMessage,
+                        this->textColor_, FontStyle::ChatMediumSmall)
+                    ->setLink({Link::UserInfo, name});
+            }
 
             this->emplace<SingleLineTextElement>(
                 body,
