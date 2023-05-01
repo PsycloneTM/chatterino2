@@ -1,4 +1,3 @@
-
 #include "singletons/Theme.hpp"
 
 #include "Application.hpp"
@@ -150,30 +149,13 @@ void parseColors(const QJsonObject &root, chatterino::Theme &theme)
  *
  * NOTE: No theme validation is done by this function
  **/
-std::map<QString, ThemeDescriptor> Theme::getAvailableThemes() const
-{
-    return availableThemes_;
-}
 std::optional<QJsonObject> loadTheme(const ThemeDescriptor &theme)
 {
-    // Check if the theme is a custom theme with the same name as a built-in theme
-    auto builtInThemes = getApp()->themes->getThemeDescriptions();
-    for (const auto &builtInTheme : builtInThemes)
-    {
-        if (theme.name == builtInTheme.name())
-        {
-            qCDebug(chatterinoTheme) << "Skipping loading custom theme with "
-                                        "same name as built-in theme:"
-                                     << theme.name;
-            return std::nullopt;
-        }
-    }
-
     QFile file(theme.path);
-    if (!file.open(QIODevice::ReadOnly))
+    if (!file.open(QFile::ReadOnly))
     {
-        qCWarning(chatterinoTheme).nospace()
-            << "Unable to open file: " << theme.path;
+        qCWarning(chatterinoTheme)
+            << "Failed to open" << file.fileName() << "at" << theme.path;
         return std::nullopt;
     }
 
@@ -211,15 +193,16 @@ bool Theme::isLightTheme() const
 
 void Theme::initialize(Settings &settings, Paths &paths)
 {
+    this->themeName.connect(
+        [this](auto themeName) {
+            qCDebug(chatterinoTheme) << "Theme updated to" << themeName;
+            this->update();
+        },
+        false);
+
     this->loadAvailableThemes();
 
-    // Load the theme from the settings
-    QString themeName = this->themeName.getValue();
-    if (!this->tryLoadTheme(themeName))
-    {
-        // fallback to the default theme if the one saved in the settings doesn't exist or is invalid
-        this->tryLoadTheme(fallbackTheme.path);
-    }
+    this->update();
 }
 
 void Theme::update()
@@ -312,7 +295,17 @@ void Theme::loadAvailableThemes()
 
         auto themeName = info.baseName();
 
-        this->availableThemes_.emplace(themeName, themeDescriptor);
+        // Check if the theme name already exists in the built-in themes
+        if (Theme::builtInThemes.count(themeName) == 0)
+        {
+            this->availableThemes_.emplace(themeName, themeDescriptor);
+        }
+        else
+        {
+            qCWarning(chatterinoTheme)
+                << "Custom theme" << themeName
+                << "has the same name as a built-in theme and will be ignored.";
+        }
     }
 }
 
