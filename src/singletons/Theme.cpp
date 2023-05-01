@@ -203,6 +203,8 @@ void Theme::initialize(Settings &settings, Paths &paths)
     this->loadAvailableThemes();
 
     this->update();
+
+    this->contextMenuStyleSheet = "your default style here";
 }
 
 void Theme::update()
