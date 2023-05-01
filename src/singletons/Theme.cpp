@@ -1,4 +1,3 @@
-
 #include "singletons/Theme.hpp"
 
 #include "Application.hpp"
@@ -253,7 +252,15 @@ QStringList Theme::availableThemeNames() const
 
     for (const auto &[name, theme] : this->availableThemes_)
     {
-        themeNames.append(name);
+        // NOTE: This check could also use `Theme::builtInThemes.contains(name)` instead
+        if (theme.custom)
+        {
+            themeNames.append(QString("Custom: %1").arg(name));
+        }
+        else
+        {
+            themeNames.append(name);
+        }
     }
 
     return themeNames;
@@ -286,12 +293,7 @@ void Theme::loadAvailableThemes()
             continue;
         }
 
-        auto themeName = info.baseName();
-        
-        if (builtInThemes.find(themeName) != builtInTheme.end())
-        {
-            themeName += " (Custom)";
-        }
+        auto themeName = QString("Custom: %1").arg(info.baseName());
 
         this->availableThemes_.emplace(themeName, themeDescriptor);
     }
@@ -311,14 +313,6 @@ void Theme::parseFrom(const QJsonObject &root)
         "selection-background-color:" +
         (this->isLightTheme() ? "#68B1FF"
                               : this->tabs.selected.backgrounds.regular.name());
-
-    this->window.contextMenuStyleSheet =
-        QStringLiteral("QMenu { background: %1; border: %2; color: %3; "
-                       "selection-background-color: %2; } "
-                       "QMenu::item:disabled { color: #8c7f7f; }")
-            .arg(splits.input.background.name(QColor::HexArgb),
-                 tabs.selected.backgrounds.regular.name(QColor::HexArgb),
-                 tabs.selected.text.name(QColor::HexArgb));
 
     // Usercard buttons
     if (this->isLightTheme())
