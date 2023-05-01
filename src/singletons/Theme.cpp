@@ -150,28 +150,44 @@ void parseColors(const QJsonObject &root, chatterino::Theme &theme)
  *
  * NOTE: No theme validation is done by this function
  **/
-std::optional<QJsonObject> loadTheme(const ThemeDescriptor &theme)
+std::optional<Theme> ThemeManager::loadTheme(const ThemeDescriptor &descriptor)
 {
-    QFile file(theme.path);
-    if (!file.open(QFile::ReadOnly))
+    // Check if the theme name matches a built-in theme name
+    if (descriptor.name == "Light" || descriptor.name == "Dark" ||
+        descriptor.name == "Black")
+    {
+        // Return an error or do something else to prevent the theme from being loaded
+        qCWarning(chatterinoTheme)
+            << "Cannot load custom theme with same name as built-in theme:"
+            << descriptor.name;
+        return std::nullopt;
+    }
+
+    // Load the theme as usual
+    QFile file(descriptor.path);
+    if (!file.open(QIODevice::ReadOnly))
     {
         qCWarning(chatterinoTheme)
-            << "Failed to open" << file.fileName() << "at" << theme.path;
+            << "Error opening theme file:" << descriptor.path
+            << file.errorString();
         return std::nullopt;
     }
 
-    QJsonParseError error{};
-    auto json = QJsonDocument::fromJson(file.readAll(), &error);
-    if (!json.isObject())
-    {
-        qCWarning(chatterinoTheme) << "Failed to parse" << file.fileName()
-                                   << "error:" << error.errorString();
-        return std::nullopt;
-    }
+    // ...
+}
 
-    // TODO: Validate JSON schema?
+QJsonParseError error{};
+auto json = QJsonDocument::fromJson(file.readAll(), &error);
+if (!json.isObject())
+{
+    qCWarning(chatterinoTheme) << "Failed to parse" << file.fileName()
+                               << "error:" << error.errorString();
+    return std::nullopt;
+}
 
-    return json.object();
+// TODO: Validate JSON schema?
+
+return json.object();
 }
 
 }  // namespace
