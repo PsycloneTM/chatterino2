@@ -276,7 +276,7 @@ void Theme::loadAvailableThemes()
             continue;
         }
 
-        auto themeDescriptor = ThemeDescriptor{info.absoluteFilePath(), true};
+        auto themeDescriptor = ThemeDescriptor{info.absoluteFilePath(), info.baseName(), true};
 
         auto theme = loadTheme(themeDescriptor);
         if (!theme)
