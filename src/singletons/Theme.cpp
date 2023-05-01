@@ -296,11 +296,13 @@ void Theme::loadAvailableThemes()
 
         auto themeName = info.baseName();
 
-        // check if a built-in theme with the same name exists
-        if (builtInThemes.contains(themeName))
+        // Check if a theme with the same name already exists
+        if (this->availableThemes_.find(themeName) !=
+            this->availableThemes_.end())
         {
-            qCWarning(chatterinoTheme) << "Theme" << themeName
-                                       << "already exists as a built-in theme.";
+            qCWarning(chatterinoTheme)
+                << "Custom theme" << themeName
+                << "has the same name as a built-in theme. Skipping.";
             continue;
         }
 
