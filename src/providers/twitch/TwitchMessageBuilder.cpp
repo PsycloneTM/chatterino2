@@ -535,8 +535,8 @@ void TwitchMessageBuilder::addTextOrEmoji(const QString &string_)
 
     // Actually just text
     auto linkString = this->matchLink(string);
-    LinkParser parsed(string);
-    if (parsed.result())
+
+    if (!linkString.isEmpty())
     {
         this->addLink(*parsed.result());
         return;
