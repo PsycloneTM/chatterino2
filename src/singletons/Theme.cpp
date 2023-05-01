@@ -152,16 +152,18 @@ void parseColors(const QJsonObject &root, chatterino::Theme &theme)
  **/
 std::optional<QJsonObject> loadTheme(const ThemeDescriptor &theme)
 {
-    // Check if the theme has the same name as a built-in theme
-    const auto &builtinThemes =
-        chatterino::singletons::ResourceManager::getInstance().getThemeMap();
-    const auto it = builtinThemes.find(theme.name);
-    if (it != builtinThemes.end())
+    // Check if the theme is a custom theme with the same name as a built-in theme
+    auto builtInThemes =
+        chatterino::singletons::resources().getThemeDescriptions();
+    for (const auto &builtInTheme : builtInThemes)
     {
-        qCWarning(chatterinoTheme) << "Theme with name" << theme.name
-                                   << "has the same name as a built-in theme. "
-                                      "Custom theme will not be loaded.";
-        return std::nullopt;
+        if (theme.name == builtInTheme.name)
+        {
+            qCDebug(chatterinoTheme) << "Skipping loading custom theme with "
+                                        "same name as built-in theme:"
+                                     << theme.name;
+            return std::nullopt;
+        }
     }
 
     QFile file(theme.path);
