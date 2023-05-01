@@ -290,7 +290,7 @@ void Theme::loadAvailableThemes()
         {
             themeName += " (Custom)";
             themeDescriptor.displayName = themeName;
-
+        }
         this->availableThemes_.emplace(themeName, themeDescriptor);
     }
 }
