@@ -527,6 +527,8 @@ void TwitchMessageBuilder::addTextOrEmoji(const QString &string_)
         return;
     }
 
+    auto textColor = this->textColor_;
+
     if (this->bttvModifier_ != BttvModifier::None)
     {
         this->emplace<TextElement>(stringifyBttvModifier(this->bttvModifier_),
@@ -536,7 +538,6 @@ void TwitchMessageBuilder::addTextOrEmoji(const QString &string_)
 
     // Actually just text
     LinkParser parsed(string);
-    auto textColor = this->textColor_;
 
     if (parsed.result())
     {
