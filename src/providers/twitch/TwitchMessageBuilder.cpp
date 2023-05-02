@@ -452,10 +452,13 @@ TwitchMessageBuilder::BttvModifier TwitchMessageBuilder::tryParseBttvModifier(
     switch (word.at(0).unicode())
     {
         case u'w':
+        case u'W':
             return BttvModifier::Wide;
         case u'h':
+        case u'Y':
             return BttvModifier::FlipH;
         case u'v':
+        case u'X':
             return BttvModifier::FlipV;
         case u'z':
             return BttvModifier::ZeroSpace;
@@ -523,8 +526,6 @@ void TwitchMessageBuilder::addTextOrEmoji(const QString &string_)
         this->bttvModifier_ = BttvModifier::None;
         return;
     }
-
-    auto textColor = this->textColor_;
 
     if (this->bttvModifier_ != BttvModifier::None)
     {
