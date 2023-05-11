@@ -297,8 +297,7 @@ void Theme::loadAvailableThemes()
         auto themeName = info.baseName();
 
         auto themeIt = this->availableThemes_.find(themeName); 
-        if (themeIt != this->availableThemes_.end() &&
-                           !themeIt->second.custom)
+        if (themeIt != this->availableThemes_.end() && !themeIt->second.custom)
         {
             themeName += "_custom";
         }
