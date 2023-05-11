@@ -294,13 +294,7 @@ void Theme::loadAvailableThemes()
             continue;
         }
 
-        auto themeName = info.baseName();
-
-        auto themeIt = this->availableThemes_.find(themeName);
-        if (themeIt != this->availableThemes_.end() && !themeIt->second.custom)
-        {
-            themeName += ".json";
-        }
+        auto themeName = info.baseName() + ".json";
 
         this->availableThemes_.emplace(themeName, themeDescriptor);
     }
