@@ -296,6 +296,13 @@ void Theme::loadAvailableThemes()
 
         auto themeName = info.baseName();
 
+        auto themeIt = this->availableTheme_.find(
+            themeName) if (themeIt != this->availableTheme_.end() &&
+                           !themeIt->second.custom)
+        {
+            themeName += "_custom";
+        }
+
         this->availableThemes_.emplace(themeName, themeDescriptor);
     }
 }
