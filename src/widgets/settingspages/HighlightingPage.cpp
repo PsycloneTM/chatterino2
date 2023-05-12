@@ -366,9 +366,8 @@ void HighlightingPage::tableCellClicked(const QModelIndex &clicked,
 {
     QFont boldFont;
     boldFont.setBold(true);
-    view->getTableView()->horizontalHeader()->setFont(
-        boldFont);
-    
+    view->getTableView()->horizontalHeader()->setFont(boldFont);
+
     switch (tab)
     {
         case HighlightTab::Messages:
