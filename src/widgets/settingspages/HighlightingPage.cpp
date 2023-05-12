@@ -18,11 +18,13 @@
 #include "widgets/helper/EditableModelView.hpp"
 
 #include <QFileDialog>
+#include <QFont>
 #include <QHeaderView>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QTabWidget>
+
 
 #define ALWAYS_PLAY "Play highlight sound even when Chatterino is focused"
 
@@ -89,6 +91,11 @@ HighlightingPage::HighlightingPage()
                     view->getTableView()->resizeColumnsToContents();
                     view->getTableView()->setColumnWidth(0, 400);
                 });
+
+                QFont headerFont =
+                    view->getTableView()->horizontalHeader()->font();
+                headerFont.setWeight(QFont::Bold);
+                view->getTableView()->horizontalHeader()->setFont(headerFont);
 
                 view->addButtonPressed.connect([] {
                     getSettings()->highlightedMessages.append(HighlightPhrase{
