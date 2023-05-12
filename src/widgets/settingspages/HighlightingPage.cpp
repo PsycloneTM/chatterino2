@@ -98,16 +98,17 @@ HighlightingPage::HighlightingPage()
                             ColorType::SelfHighlight)});
                 });
 
-                QObject::connect(view->getTableView(), &QTableView::clicked,
-                                 [this, view](const QModelIndex &clicked) {
-                                     this->tableCellClicked(
-                                         clicked, view, HighlightTab::Messages);
-                                     
-                                     QFont font =
-                                        view->getTableView()->horizontalHeader()->font();
-                                    font.setBold(true);
-                                    view->getTableView()->horizontalHeader()->setFont(font);
-                                 });
+                QObject::connect(
+                    view->getTableView(), &QTableView::clicked,
+                    [this, view](const QModelIndex &clicked) {
+                        this->tableCellClicked(clicked, view,
+                                               HighlightTab::Messages);
+
+                        QFont font =
+                            view->getTableView()->horizontalHeader()->font();
+                        font.setBold(true);
+                        view->getTableView()->horizontalHeader()->setFont(font);
+                    });
             }
 
             auto pingUsers = tabs.appendTab(new QVBoxLayout, "Users");
