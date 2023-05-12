@@ -25,7 +25,6 @@
 #include <QTableView>
 #include <QTabWidget>
 
-
 #define ALWAYS_PLAY "Play highlight sound even when Chatterino is focused"
 
 namespace chatterino {
