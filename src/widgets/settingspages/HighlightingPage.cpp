@@ -18,7 +18,6 @@
 #include "widgets/helper/EditableModelView.hpp"
 
 #include <QFileDialog>
-#include <QFont>
 #include <QHeaderView>
 #include <QPushButton>
 #include <QStandardItemModel>
@@ -98,17 +97,11 @@ HighlightingPage::HighlightingPage()
                             ColorType::SelfHighlight)});
                 });
 
-                QObject::connect(
-                    view->getTableView(), &QTableView::clicked,
-                    [this, view](const QModelIndex &clicked) {
-                        this->tableCellClicked(clicked, view,
-                                               HighlightTab::Messages);
-
-                        QFont font =
-                            view->getTableView()->horizontalHeader()->font();
-                        font.setBold(true);
-                        view->getTableView()->horizontalHeader()->setFont(font);
-                    });
+                QObject::connect(view->getTableView(), &QTableView::clicked,
+                                 [this, view](const QModelIndex &clicked) {
+                                     this->tableCellClicked(
+                                         clicked, view, HighlightTab::Messages);
+                                 });
             }
 
             auto pingUsers = tabs.appendTab(new QVBoxLayout, "Users");
@@ -365,6 +358,12 @@ void HighlightingPage::openColorDialog(const QModelIndex &clicked,
         }
     });
 }
+void HighlightingPage::setBoldOnHighlight(const QModelIndex &index, bool isBold)
+{
+    QFont font = ui->yourTableview->horizontalHeader()->font();
+    font.setBold(isBold);
+    ui->yourTableview->horizontalHeader()->setFont(font);
+}
 
 void HighlightingPage::tableCellClicked(const QModelIndex &clicked,
                                         EditableModelView *view,
@@ -403,6 +402,14 @@ void HighlightingPage::tableCellClicked(const QModelIndex &clicked,
             }
         }
         break;
+    }
+    if (clicked.row() == SOME_HIGHLIGHT_ROW)
+    {
+        setBoldOnHighlight(clicked, true);
+    }
+    else
+    {
+        setBoldOnHighlight(clicked, false);
     }
 }
 
