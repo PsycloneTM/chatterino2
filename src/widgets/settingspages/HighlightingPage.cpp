@@ -358,6 +358,12 @@ void HighlightingPage::openColorDialog(const QModelIndex &clicked,
         }
     });
 }
+void HighlightingPage::setBoldOnHighlight(const QModelIndex &index, bool isBold)
+{
+    QFont font = ui->yourTableview->horizontalHeader()->font();
+    font.setBold(isBold);
+    ui->yourTableview->horizontalHeader()->setFont(font);
+}
 
 void HighlightingPage::tableCellClicked(const QModelIndex &clicked,
                                         EditableModelView *view,
@@ -396,6 +402,14 @@ void HighlightingPage::tableCellClicked(const QModelIndex &clicked,
             }
         }
         break;
+    }
+    if (clicked.row() == SOME_HIGHLIGHT_ROW)
+    {
+        setBoldOnHighlight(clicked, true);
+    }
+    else
+    {
+        setBoldOnHighlight(clicked, false);
     }
 }
 

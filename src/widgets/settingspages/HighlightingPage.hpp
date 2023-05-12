@@ -28,6 +28,8 @@ private:
                          int soundColumn);
     void openColorDialog(const QModelIndex &clicked, EditableModelView *view,
                          HighlightTab tab);
+
+    void setBoldOnHighlight(const QModelIndex &index, bool isBold);
 };
 
 }  // namespace chatterino
