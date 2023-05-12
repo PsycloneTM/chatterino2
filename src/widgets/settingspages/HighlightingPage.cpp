@@ -91,11 +91,6 @@ HighlightingPage::HighlightingPage()
                     view->getTableView()->setColumnWidth(0, 400);
                 });
 
-                QFont headerFont =
-                    view->getTableView()->horizontalHeader()->font();
-                headerFont.setWeight(QFont::Bold);
-                view->getTableView()->horizontalHeader()->setFont(headerFont);
-
                 view->addButtonPressed.connect([] {
                     getSettings()->highlightedMessages.append(HighlightPhrase{
                         "my phrase", true, true, false, false, false, "",
@@ -107,6 +102,11 @@ HighlightingPage::HighlightingPage()
                                  [this, view](const QModelIndex &clicked) {
                                      this->tableCellClicked(
                                          clicked, view, HighlightTab::Messages);
+                                     
+                                     QFont font =
+                                        view->getTableView()->horizontalHeader()->font();
+                                    font.setBold(true);
+                                    view->getTableView()->horizontalHeader()->setFont(font);
                                  });
             }
 
