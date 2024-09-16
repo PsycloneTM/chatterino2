@@ -17,6 +17,7 @@
 
 - Major: Added support for FrankerFaceZ animated emotes. (#4434)
 - Minor: Added the ability to reply to a message by `Shift + Right Click`ing the username. (#4424)
+- Minor: Added support for BTTV emote modifiers (`w!`, `h!`, `v!`, `z!`). (#4478)
 - Minor: Reply context now censors blocked users. (#4502)
 - Minor: Migrated the viewer list to Helix API. (#4117)
 - Minor: Migrated badges to Helix API. (#4537)

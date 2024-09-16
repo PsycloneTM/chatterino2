@@ -1,6 +1,7 @@
 #include "providers/twitch/TwitchMessageBuilder.hpp"
 
 #include "Application.hpp"
+#include "BaseSettings.hpp"
 #include "common/LinkParser.hpp"
 #include "common/QLogging.hpp"
 #include "controllers/accounts/AccountController.hpp"
@@ -137,6 +138,7 @@ TwitchMessageBuilder::TwitchMessageBuilder(
     const MessageParseArgs &_args)
     : SharedMessageBuilder(_channel, _ircMessage, _args)
     , twitchChannel(dynamic_cast<TwitchChannel *>(_channel))
+    , parseBttvModifiers_(getSettings()->enableBTTVEmoteModifiers)
 {
 }
 
@@ -145,6 +147,7 @@ TwitchMessageBuilder::TwitchMessageBuilder(
     const MessageParseArgs &_args, QString content, bool isAction)
     : SharedMessageBuilder(_channel, _ircMessage, _args, content, isAction)
     , twitchChannel(dynamic_cast<TwitchChannel *>(_channel))
+    , parseBttvModifiers_(getSettings()->enableBTTVEmoteModifiers)
 {
 }
 
@@ -439,8 +442,56 @@ void TwitchMessageBuilder::addWords(
     }
 }
 
+TwitchMessageBuilder::BttvModifier TwitchMessageBuilder::tryParseBttvModifier(
+    const QString &word)
+{
+    if (word.length() != 2 || word.at(1) != QChar(u'!')) [[likely]]
+    {
+        return BttvModifier::None;
+    }
+    switch (word.at(0).unicode())
+    {
+        case u'w':
+        case u'W':
+            return BttvModifier::Wide;
+        case u'h':
+        case u'Y':
+            return BttvModifier::FlipH;
+        case u'v':
+        case u'X':
+            return BttvModifier::FlipV;
+        case u'z':
+            return BttvModifier::ZeroSpace;
+        default:
+            return BttvModifier::None;
+    }
+}
+
+QString TwitchMessageBuilder::stringifyBttvModifier(BttvModifier modifier)
+{
+    switch (modifier)
+    {
+        case BttvModifier::Wide:
+            return QStringLiteral("w!");
+        case BttvModifier::FlipH:
+            return QStringLiteral("h!");
+        case BttvModifier::FlipV:
+            return QStringLiteral("v!");
+        case BttvModifier::ZeroSpace:
+            return QStringLiteral("z!");
+            // TODO: wait for CI to use a newer version of clang-format
+            // clang-format off
+        case BttvModifier::None:
+            [[fallthrough]];
+        [[unlikely]] default:
+            return QStringLiteral("");
+            // clang-format on
+    }
+}
+
 void TwitchMessageBuilder::addTextOrEmoji(EmotePtr emote)
 {
+    this->bttvModifier_ = BttvModifier::None;
     return SharedMessageBuilder::addTextOrEmoji(emote);
 }
 
@@ -454,20 +505,39 @@ void TwitchMessageBuilder::addTextOrEmoji(const QString &string_)
         return;
     }
 
+    auto nextBttvModifier = this->parseBttvModifiers_
+                                ? tryParseBttvModifier(string)
+                                : BttvModifier::None;
+    if (nextBttvModifier != BttvModifier::None)
+    {
+        this->bttvModifier_ = nextBttvModifier;
+        return;  // skip
+    }
+
     // TODO: Implement ignored emotes
     // Format of ignored emotes:
     // Emote name: "forsenPuke" - if string in ignoredEmotes
     // Will match emote regardless of source (i.e. bttv, ffz)
     // Emote source + name: "bttv:nyanPls"
-    if (this->tryAppendEmote({string}))
+    auto didAppendEmote = this->tryAppendEmote({string});
+    if (didAppendEmote)
     {
         // Successfully appended an emote
+        this->bttvModifier_ = BttvModifier::None;
         return;
+    }
+
+    auto textColor = this->textColor_;
+
+    if (this->bttvModifier_ != BttvModifier::None)
+    {
+        this->emplace<TextElement>(stringifyBttvModifier(this->bttvModifier_),
+                                   MessageElementFlag::Text, textColor);
+        this->bttvModifier_ = BttvModifier::None;
     }
 
     // Actually just text
     LinkParser parsed(string);
-    auto textColor = this->textColor_;
 
     if (parsed.result())
     {
@@ -1080,6 +1150,27 @@ Outcome TwitchMessageBuilder::tryAppendEmote(const EmoteName &name)
     {
         flags = MessageElementFlag::SevenTVEmote;
         zeroWidth = emote.value()->zeroWidth;
+    }
+
+    switch (this->bttvModifier_)
+    {
+        // TODO: wait for CI to use a newer version of clang-format
+        // clang-format off
+        [[likely]] case BttvModifier::None:
+            break;
+            // clang-format on
+        case BttvModifier::Wide:
+            flags.set(MessageElementFlag::BttvModifierWide);
+            break;
+        case BttvModifier::FlipH:
+            flags.set(MessageElementFlag::BttvModifierFlipH);
+            break;
+        case BttvModifier::FlipV:
+            flags.set(MessageElementFlag::BttvModifierFlipV);
+            break;
+        case BttvModifier::ZeroSpace:
+            flags.set(MessageElementFlag::BttvModifierZeroSpace);
+            break;
     }
 
     if (emote)
