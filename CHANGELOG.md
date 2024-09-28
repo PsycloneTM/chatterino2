@@ -38,6 +38,7 @@
 - Bugfix: Fixed Twitch channel-specific filters not being applied correctly. (#4529)
 - Bugfix: Fixed `/mods` displaying incorrectly when the channel has no mods. (#4546)
 - Bugfix: Fixed emote & badge tooltips not showing up when thumbnails were hidden. (#4509)
+- Dev: Add the ability to load themes from the Themes directory. (#4570)
 - Bugfix: Fixed links with invalid IPv4 addresses being parsed. (#4576)
 - Bugfix: Fixed the macOS icon changing to the wrong icon when the application is open. (#4577)
 - Dev: Disabling precompiled headers on Windows is now tested in CI. (#4472)
