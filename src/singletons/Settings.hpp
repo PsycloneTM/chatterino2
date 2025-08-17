@@ -778,6 +778,8 @@ public:
     std::optional<QString> matchNickname(const QString &username);
     void mute(const QString &channelName);
     void unmute(const QString &channelName);
+    BoolSetting enableSpellCheck = {"/spellcheck/enabled", true};
+    StringSetting spellCheckLanguage = {"/spellcheck/language", "en-US"};
 
 private:
     void updateModerationActions();
