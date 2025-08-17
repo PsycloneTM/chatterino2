@@ -1277,4 +1277,56 @@ int SplitInput::replyMessageWidth() const
     return this->ui_.inputWrapper->width() - 1 - 10;
 }
 
+void SplitInput::initializeSpellCheck()
+{
+    this->spellChecker_ = getApp()->getSpellChecker();
+    
+    if (this->spellChecker_)
+    {
+        this->spellHighlighter_ = new SpellCheckHighlighter(this->document(), this->spellChecker_);
+    }
+}
+
+void SplitInput::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu *menu = this->createStandardContextMenu();
+    
+    if (this->spellChecker_ && this->spellChecker_->isEnabled())
+    {
+        QTextCursor cursor = this->cursorForPosition(event->pos());
+        cursor.select(QTextCursor::WordUnderCursor);
+        QString word = cursor.selectedText();
+        
+        if (!word.isEmpty() && !this->spellChecker_->isWordCorrect(word))
+        {
+            QStringList suggestions = this->spellChecker_->suggestions(word);
+            
+            if (!suggestions.isEmpty())
+            {
+                menu->addSeparator();
+                QMenu *spellMenu = menu->addMenu("Spelling Suggestions");
+                
+                for (const QString &suggestion : suggestions)
+                {
+                    QAction *action = spellMenu->addAction(suggestion);
+                    connect(action, &QAction::triggered, [this, cursor, suggestion]() {
+                        QTextCursor replaceCursor = cursor;
+                        replaceCursor.removeSelectedText();
+                        replaceCursor.insertText(suggestion);
+                    });
+                }
+                
+                spellMenu->addSeparator();
+                QAction *addAction = spellMenu->addAction("Add to Dictionary");
+                connect(addAction, &QAction::triggered, [this, word]() {
+                    this->spellChecker_->addToPersonalDictionary(word);
+                });
+            }
+        }
+    }
+    
+    menu->exec(event->globalPos());
+    delete menu;
+}
+
 }  // namespace chatterino
