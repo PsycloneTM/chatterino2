@@ -59,6 +59,7 @@
 #include "widgets/Notebook.hpp"
 #include "widgets/splits/Split.hpp"
 #include "widgets/Window.hpp"
+#include "widgets/helper/SpellChecker.hpp"
 
 #include <miniaudio.h>
 #include <QApplication>
@@ -249,6 +250,8 @@ void Application::initialize(Settings &settings, const Paths &paths)
 
     // Load live status
     this->notifications->initialize();
+
+    this->spellChecker_ = std::make_unique<chatterino::SpellChecker>();
 
     // XXX: Loading Twitch badges after Helix has been initialized, which only happens after
     // the AccountController initialize has been called
@@ -588,6 +591,11 @@ pronouns::Pronouns *Application::getPronouns()
     assert(this->pronouns);
 
     return this->pronouns.get();
+}
+
+chatterino::SpellChecker *Application::getSpellChecker()
+{
+    return this->spellChecker_.get();
 }
 
 eventsub::IController *Application::getEventSub()
