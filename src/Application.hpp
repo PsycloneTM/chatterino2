@@ -23,7 +23,6 @@ class SoundController;
 class ITwitchLiveController;
 class TwitchLiveController;
 class TwitchBadges;
-class SpellChecker;
 #ifdef CHATTERINO_HAVE_PLUGINS
 class PluginController;
 #endif
@@ -57,6 +56,9 @@ class NativeMessagingServer;
 namespace pronouns {
 class Pronouns;
 }  // namespace pronouns
+namespace chatterino {
+class SpellChecker;
+}
 namespace eventsub {
 class IController;
 }  // namespace eventsub
@@ -180,6 +182,7 @@ private:
     std::unique_ptr<IStreamerMode> streamerMode;
     std::unique_ptr<ITwitchUsers> twitchUsers;
     std::unique_ptr<pronouns::Pronouns> pronouns;
+    std::unique_ptr<chatterino::SpellChecker> spellChecker;
 #ifdef CHATTERINO_HAVE_PLUGINS
     std::unique_ptr<PluginController> plugins;
 #endif
@@ -216,7 +219,7 @@ public:
     IChatterinoBadges *getChatterinoBadges() override;
     ImageUploader *getImageUploader() override;
     SeventvAPI *getSeventvAPI() override;
-    chatterino::SpellChecker *getSpellChecker();
+    SpellChecker *getSpellChecker();
 #ifdef CHATTERINO_HAVE_PLUGINS
     PluginController *getPlugins() override;
 #endif
@@ -241,8 +244,6 @@ private:
     Updates &updates;
 
     bool initialized{false};
-
-    std::unique_ptr<chatterino::SpellChecker> spellChecker_;
 };
 
 IApplication *getApp();
