@@ -277,3 +277,49 @@ if (BUILD_BENCHMARKS)
 endif ()
 
 feature_summary(WHAT ALL)
+
+# Addition to CMakeLists.txt
+
+# Spell check dependencies
+if(WIN32)
+    # Windows uses built-in Spell Checking API
+    target_link_libraries(${LIBRARY_PROJECT}
+        ole32
+        oleaut32
+    )
+elseif(APPLE)
+    # macOS uses NSSpellChecker from Cocoa
+    find_library(COCOA_LIBRARY Cocoa REQUIRED)
+    target_link_libraries(${LIBRARY_PROJECT}
+        ${COCOA_LIBRARY}
+    )
+elseif(UNIX AND NOT APPLE)
+    # Linux uses Hunspell
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(HUNSPELL REQUIRED hunspell)
+    
+    target_include_directories(${LIBRARY_PROJECT} PRIVATE 
+        ${HUNSPELL_INCLUDE_DIRS}
+    )
+    target_link_libraries(${LIBRARY_PROJECT}
+        ${HUNSPELL_LIBRARIES}
+    )
+    target_compile_options(${LIBRARY_PROJECT} PRIVATE 
+        ${HUNSPELL_CFLAGS_OTHER}
+    )
+endif()
+
+# Add spell check source files
+target_sources(${LIBRARY_PROJECT} PRIVATE
+    src/widgets/helper/SpellChecker.cpp
+    src/widgets/helper/SpellChecker.hpp
+    src/widgets/helper/SpellCheckHighlighter.cpp
+    src/widgets/helper/SpellCheckHighlighter.hpp
+)
+
+# Add logging category for spell check
+set(CHATTERINO_HAVE_SPELLCHECK 1)
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/common/QLogging.hpp.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/common/QLogging.hpp"
+)
