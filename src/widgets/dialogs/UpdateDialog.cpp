@@ -97,4 +97,34 @@ void UpdateDialog::updateStatusChanged(Updates::Status status)
     }
 }
 
+void SettingsDialog::addSpellCheckSettings()
+{
+    auto *layout = this->addTab(new QVBoxLayout, "Spell Check");
+    
+    {
+        auto *group = new QGroupBox("Spell Check Settings");
+        auto *groupLayout = new QVBoxLayout(group);
+        
+        auto *enableCheckbox = new QCheckBox("Enable spell checking");
+        enableCheckbox->setChecked(getSettings()->enableSpellCheck);
+        QObject::connect(enableCheckbox, &QCheckBox::toggled, 
+                        [](bool checked) { getSettings()->enableSpellCheck = checked; });
+        groupLayout->addWidget(enableCheckbox);
+        
+        auto *languageLabel = new QLabel("Dictionary Language:");
+        auto *languageCombo = new QComboBox();
+        languageCombo->addItems({"en-US", "en-GB", "es-ES", "fr-FR", "de-DE"});
+        languageCombo->setCurrentText(getSettings()->spellCheckLanguage);
+        QObject::connect(languageCombo, QOverload<const QString &>::of(&QComboBox::currentTextChanged),
+                        [](const QString &language) { getSettings()->spellCheckLanguage = language; });
+        
+        groupLayout->addWidget(languageLabel);
+        groupLayout->addWidget(languageCombo);
+        
+        layout->addWidget(group);
+    }
+    
+    layout->addStretch(1);
+}
+
 }  // namespace chatterino

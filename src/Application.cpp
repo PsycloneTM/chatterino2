@@ -59,6 +59,7 @@
 #include "widgets/Notebook.hpp"
 #include "widgets/splits/Split.hpp"
 #include "widgets/Window.hpp"
+#include "widgets/helper/SpellChecker.hpp"
 
 #include <miniaudio.h>
 #include <QApplication>
@@ -195,6 +196,7 @@ Application::Application(Settings &_settings, const Paths &paths,
     , streamerMode(new StreamerMode)
     , twitchUsers(new TwitchUsers)
     , pronouns(new pronouns::Pronouns)
+    , spellChecker(new SpellChecker)
 #ifdef CHATTERINO_HAVE_PLUGINS
     , plugins(new PluginController(paths))
 #endif
@@ -249,6 +251,8 @@ void Application::initialize(Settings &settings, const Paths &paths)
 
     // Load live status
     this->notifications->initialize();
+
+    this->spellChecker->initialize();
 
     // XXX: Loading Twitch badges after Helix has been initialized, which only happens after
     // the AccountController initialize has been called
@@ -590,6 +594,11 @@ pronouns::Pronouns *Application::getPronouns()
     return this->pronouns.get();
 }
 
+chatterino::SpellChecker *Application::getSpellChecker()
+{
+    return this->spellChecker.get();
+}
+
 eventsub::IController *Application::getEventSub()
 {
     assert(this->eventSub);
@@ -617,6 +626,7 @@ void Application::stop()
     this->plugins.reset();
 #endif
     this->pronouns.reset();
+    this->spellchecker.reset();
     this->twitchUsers.reset();
     this->streamerMode.reset();
     this->linkResolver.reset();

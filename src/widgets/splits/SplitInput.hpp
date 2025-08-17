@@ -2,6 +2,8 @@
 
 #include "messages/Message.hpp"
 #include "widgets/BaseWidget.hpp"
+#include "widgets/helper/SpellChecker.hpp"
+#include "widgets/helper/SpellCheckHighlighter.hpp"
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -175,5 +177,15 @@ private Q_SLOTS:
     friend class Split;
     friend class ReplyThreadPopup;
 };
+
+private:
+    SpellChecker *spellChecker_{};
+    SpellCheckHighlighter *spellHighlighter_{};
+    
+protected:
+    void contextMenuEvent(QContextMenuEvent *event) override;
+
+private slots:
+    void showSpellCheckSuggestions(const QPoint &pos);
 
 }  // namespace chatterino
